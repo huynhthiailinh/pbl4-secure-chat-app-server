@@ -6,16 +6,13 @@ import com.dut.sweetchatapp.service.AccountService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @AllArgsConstructor
 @Service
 public class AccountServiceImpl implements AccountService {
 
     private final AccountRepository accountRepository;
-
-    @Override
-    public Account addAccount(Account account) {
-        return accountRepository.save(account);
-    }
 
     @Override
     public Boolean existsByUsername(String username) {
@@ -30,6 +27,11 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public Account save(Account account) {
         return accountRepository.save(account);
+    }
+
+    @Override
+    public List<Account> getAllAccounts() {
+        return (List<Account>) accountRepository.findAll();
     }
 
 }

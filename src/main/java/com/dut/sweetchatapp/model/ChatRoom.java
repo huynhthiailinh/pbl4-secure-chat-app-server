@@ -1,6 +1,7 @@
 package com.dut.sweetchatapp.model;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -18,16 +19,19 @@ import java.util.Date;
 @AllArgsConstructor
 @Getter
 @Setter
+@Builder
 @Entity
-public class Conversation {
+public class ChatRoom {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    private int userOneId;
+    private String roomId;
 
-    private int userTwoId;
+    private int senderId;
+
+    private int receiverId;
 
     @CreatedDate
     @Column(updatable = false)

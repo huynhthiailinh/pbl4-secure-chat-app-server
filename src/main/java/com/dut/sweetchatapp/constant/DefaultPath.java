@@ -4,8 +4,6 @@ public class DefaultPath {
 
     public static final String ACCOUNT_PATH = "api/accounts";
 
-    public static final String CONVERSATION_REPLY_PATH = "api/conversation-replies";
-
     public static final String AUTHENTICATION_PATH = "api/auth";
 
 }

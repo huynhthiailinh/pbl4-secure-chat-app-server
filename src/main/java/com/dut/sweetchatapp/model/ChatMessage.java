@@ -20,16 +20,24 @@ import java.util.Date;
 @Getter
 @Setter
 @Entity
-public class ConversationReply {
+public class ChatMessage {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(columnDefinition = "TEXT")
-    private String content;
+    private String roomId;
 
     private int senderId;
+
+    private String senderName;
+
+    private int receiverId;
+
+    private String receiverName;
+
+    @Column(columnDefinition = "TEXT")
+    private String content;
 
     @CreatedDate
     @Column(updatable = false)
@@ -41,7 +49,5 @@ public class ConversationReply {
     private boolean isDeleted;
 
     private MessageStatus status;
-
-    private int conversationId;
 
 }

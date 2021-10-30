@@ -6,4 +6,10 @@ public interface AccountService {
 
     Account addAccount(Account account);
 
+    Boolean existsByUsername(String username);
+
+    Boolean existsByEmail(String email);
+
+    Account save(Account account);
+
 }

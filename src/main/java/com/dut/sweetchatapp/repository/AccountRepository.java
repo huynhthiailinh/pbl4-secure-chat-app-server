@@ -1,11 +1,18 @@
 package com.dut.sweetchatapp.repository;
 
 import com.dut.sweetchatapp.model.Account;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import javax.transaction.Transactional;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.util.Optional;
 
+@Transactional
 @Repository
 public interface AccountRepository extends CrudRepository<Account, Integer> {
 
@@ -14,5 +21,11 @@ public interface AccountRepository extends CrudRepository<Account, Integer> {
     Boolean existsByUsername(String name);
 
     Boolean existsByEmail(String email);
+
+    @Query("SELECT a.publicKey FROM Account a WHERE a.id = :accountId")
+    byte[] getPublicKeyByAccountId(@Param("accountId") int accountId);
+
+    @Query("SELECT a.privateKey FROM Account a WHERE a.id = :accountId")
+    byte[] getPrivateKeyByAccountId(@Param("accountId") int accountId);
 
 }

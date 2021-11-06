@@ -6,6 +6,8 @@ import com.dut.sweetchatapp.service.AccountService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.util.List;
 
 @AllArgsConstructor
@@ -32,6 +34,16 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public List<Account> getAllAccounts() {
         return (List<Account>) accountRepository.findAll();
+    }
+
+    @Override
+    public byte[] getPublicKeyByAccountId(int accountId) {
+        return accountRepository.getPublicKeyByAccountId(accountId);
+    }
+
+    @Override
+    public byte[] getPrivateKeyByAccountId(int accountId) {
+        return accountRepository.getPrivateKeyByAccountId(accountId);
     }
 
 }

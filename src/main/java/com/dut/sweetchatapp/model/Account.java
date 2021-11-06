@@ -19,6 +19,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -58,6 +60,14 @@ public class Account {
     private String avatar;
 
     private boolean enabled;
+
+    @JsonIgnore
+    @Column(columnDefinition = "BLOB")
+    private byte[] publicKey;
+
+    @JsonIgnore
+    @Column(columnDefinition = "BLOB")
+    private byte[] privateKey;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "accounts_roles", joinColumns = @JoinColumn(name = "account_id"), inverseJoinColumns =

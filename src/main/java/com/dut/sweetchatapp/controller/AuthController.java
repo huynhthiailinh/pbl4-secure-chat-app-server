@@ -4,11 +4,11 @@ import com.dut.sweetchatapp.dto.JwtResponse;
 import com.dut.sweetchatapp.dto.LoginRequest;
 import com.dut.sweetchatapp.dto.MessageResponse;
 import com.dut.sweetchatapp.dto.SignupRequest;
-import com.dut.sweetchatapp.enums.RoleName;
 import com.dut.sweetchatapp.handleException.exception.InvalidParamException;
 import com.dut.sweetchatapp.model.Account;
 import com.dut.sweetchatapp.model.Role;
 import com.dut.sweetchatapp.repository.RoleRepository;
+import com.dut.sweetchatapp.rsa.RSAKey;
 import com.dut.sweetchatapp.sercurity.JwtUtils;
 import com.dut.sweetchatapp.service.AccountService;
 import com.dut.sweetchatapp.service.impl.UserDetailsImpl;
@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -34,6 +35,7 @@ import java.util.stream.Collectors;
 
 import static com.dut.sweetchatapp.constant.DefaultPath.AUTHENTICATION_PATH;
 import static com.dut.sweetchatapp.enums.RoleName.*;
+import static com.dut.sweetchatapp.rsa.SecurityKeyPairGenerator.generateKeyPair;
 
 @AllArgsConstructor
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -81,7 +83,7 @@ public class AuthController {
     }
 
     @PostMapping("sign-up")
-    public ResponseEntity<?> registerUser(@Validated @RequestBody SignupRequest signupRequest) {
+    public ResponseEntity<?> registerUser(@Validated @RequestBody SignupRequest signupRequest) throws NoSuchAlgorithmException {
         if (accountService.existsByUsername(signupRequest.getUsername())) {
             return ResponseEntity.badRequest().body(new MessageResponse("Error: Username is already taken!"));
         }
@@ -94,10 +96,14 @@ public class AuthController {
             throw new InvalidParamException("Error: Email is incorrect!");
         }
 
+        RSAKey rsaKey = generateKeyPair();
+
         Account user = Account.builder().username(signupRequest.getUsername())
                 .fullName(signupRequest.getFullName())
                 .password(passwordEncoder.encode(signupRequest.getPassword()))
                 .email(signupRequest.getEmail())
+                .publicKey(rsaKey.getPublicKey().getEncoded())
+                .privateKey(rsaKey.getPrivateKey().getEncoded())
                 .build();
 
         Set<String> strRoles = signupRequest.getRole();

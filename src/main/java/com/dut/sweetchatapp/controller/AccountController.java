@@ -5,10 +5,7 @@ import com.dut.sweetchatapp.service.impl.UserDetailsImpl;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import static com.dut.sweetchatapp.constant.DefaultPath.ACCOUNT_PATH;
 
@@ -20,12 +17,12 @@ public class AccountController {
 
     private final AccountService accountService;
 
-    @GetMapping("summaries")
-    public ResponseEntity<?> findAllUserSummaries(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+    @GetMapping("summaries/{accountId}")
+    public ResponseEntity<?> findAllUserSummaries(@PathVariable int accountId) {
         return ResponseEntity.ok(accountService
                 .getAllAccounts()
                 .stream()
-                .filter(account -> !account.getUsername().equals(userDetails.getUsername())));
+                .filter(account -> account.getId() != accountId));
     }
 
 }

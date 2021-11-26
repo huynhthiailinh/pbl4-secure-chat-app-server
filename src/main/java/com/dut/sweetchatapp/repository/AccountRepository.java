@@ -18,6 +18,9 @@ public interface AccountRepository extends CrudRepository<Account, Integer> {
 
     Optional<Account> findByUsernameOrEmail(String username, String email);
 
+    @Query("SELECT a FROM Account a WHERE a.email = :email")
+    Account findByEmail(@Param("email") String email);
+
     Boolean existsByUsername(String name);
 
     Boolean existsByEmail(String email);

@@ -6,4 +6,6 @@ public class DefaultPath {
 
     public static final String AUTHENTICATION_PATH = "api/auth";
 
+    public static final String ACTIVATION_PATH = "api/public/active-email";
+
 }

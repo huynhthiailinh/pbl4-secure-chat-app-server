@@ -2,11 +2,11 @@ package com.dut.sweetchatapp.service;
 
 import com.dut.sweetchatapp.model.Account;
 
-import java.security.PrivateKey;
-import java.security.PublicKey;
 import java.util.List;
 
 public interface AccountService {
+
+    Boolean checkIfEnabled(String name);
 
     Boolean existsByUsername(String username);
 
@@ -15,6 +15,10 @@ public interface AccountService {
     Account save(Account account);
 
     List<Account> getAllAccounts();
+
+    Account getAccountById(int id);
+
+    Account getAccountByEmail(String email);
 
     byte[] getPublicKeyByAccountId(int accountId);
 

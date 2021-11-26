@@ -1,13 +1,12 @@
 package com.dut.sweetchatapp.service.impl;
 
+import com.dut.sweetchatapp.handleException.exception.ObjectNotFoundException;
 import com.dut.sweetchatapp.model.Account;
 import com.dut.sweetchatapp.repository.AccountRepository;
 import com.dut.sweetchatapp.service.AccountService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.security.PrivateKey;
-import java.security.PublicKey;
 import java.util.List;
 
 @AllArgsConstructor
@@ -15,6 +14,11 @@ import java.util.List;
 public class AccountServiceImpl implements AccountService {
 
     private final AccountRepository accountRepository;
+
+    @Override
+    public Boolean checkIfEnabled(String name) {
+        return accountRepository.findByUsernameOrEmail(name, name).get().isEnabled();
+    }
 
     @Override
     public Boolean existsByUsername(String username) {
@@ -34,6 +38,17 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public List<Account> getAllAccounts() {
         return (List<Account>) accountRepository.findAll();
+    }
+
+    @Override
+    public Account getAccountByEmail(String email) {
+        return accountRepository.findByEmail(email);
+    }
+
+    @Override
+    public Account getAccountById(int id) {
+        return accountRepository.findById(id)
+                .orElseThrow(() -> new ObjectNotFoundException("Account with id " + id + " not found"));
     }
 
     @Override

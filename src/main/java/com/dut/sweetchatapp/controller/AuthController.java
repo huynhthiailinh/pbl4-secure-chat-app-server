@@ -4,6 +4,7 @@ import com.dut.sweetchatapp.dto.JwtResponse;
 import com.dut.sweetchatapp.dto.LoginRequest;
 import com.dut.sweetchatapp.dto.MessageResponse;
 import com.dut.sweetchatapp.dto.SignupRequest;
+import com.dut.sweetchatapp.handleException.exception.InactiveEmailException;
 import com.dut.sweetchatapp.handleException.exception.InvalidParamException;
 import com.dut.sweetchatapp.model.Account;
 import com.dut.sweetchatapp.model.Role;
@@ -11,6 +12,8 @@ import com.dut.sweetchatapp.repository.RoleRepository;
 import com.dut.sweetchatapp.rsa.RSAKey;
 import com.dut.sweetchatapp.sercurity.JwtUtils;
 import com.dut.sweetchatapp.service.AccountService;
+import com.dut.sweetchatapp.service.EmailService;
+import com.dut.sweetchatapp.service.VerificationTokenService;
 import com.dut.sweetchatapp.service.impl.UserDetailsImpl;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -52,6 +55,10 @@ public class AuthController {
 
     public final PasswordEncoder passwordEncoder;
 
+    public final VerificationTokenService verificationTokenService;
+
+    public final EmailService emailService;
+
     @PostMapping("sign-in")
     public ResponseEntity<?> authenticateUser(@Validated @RequestBody LoginRequest loginRequest) {
         if (!accountService.existsByUsername(loginRequest.getUsername()) && !accountService.existsByEmail(loginRequest.getUsername())) {
@@ -84,55 +91,86 @@ public class AuthController {
 
     @PostMapping("sign-up")
     public ResponseEntity<?> registerUser(@Validated @RequestBody SignupRequest signupRequest) throws NoSuchAlgorithmException {
+        boolean isNewAccount = true;
+
+        Account user = Account.builder().build();
+
         if (accountService.existsByUsername(signupRequest.getUsername())) {
             return ResponseEntity.badRequest().body(new MessageResponse("Error: Username is already taken!"));
         }
 
         if (accountService.existsByEmail(signupRequest.getEmail())) {
-            return  ResponseEntity.badRequest().body(new MessageResponse("Error: Email is already taken!"));
+            if (accountService.checkIfEnabled(signupRequest.getEmail())) {
+                throw new InactiveEmailException("Error: Email is already taken!");
+            } else {
+                isNewAccount = false;
+                user = accountService.getAccountByEmail(signupRequest.getEmail());
+                user.setUsername(signupRequest.getUsername());
+                user.setPassword(passwordEncoder.encode(signupRequest.getPassword()));
+                user.setFullName(signupRequest.getFullName());
+            }
         }
 
         if (!isValidEmailAddress(signupRequest.getEmail())) {
             throw new InvalidParamException("Error: Email is incorrect!");
         }
 
-        RSAKey rsaKey = generateKeyPair();
+        if (isNewAccount) {
 
-        Account user = Account.builder().username(signupRequest.getUsername())
-                .fullName(signupRequest.getFullName())
-                .password(passwordEncoder.encode(signupRequest.getPassword()))
-                .email(signupRequest.getEmail())
-                .publicKey(rsaKey.getPublicKey().getEncoded())
-                .privateKey(rsaKey.getPrivateKey().getEncoded())
-                .build();
+            RSAKey rsaKey = generateKeyPair();
 
-        Set<String> strRoles = signupRequest.getRole();
-        Set<Role> roles = new HashSet<>();
+            user = Account.builder()
+                    .username(signupRequest.getUsername())
+                    .fullName(signupRequest.getFullName())
+                    .password(passwordEncoder.encode(signupRequest.getPassword()))
+                    .email(signupRequest.getEmail())
+                    .publicKey(rsaKey.getPublicKey().getEncoded())
+                    .privateKey(rsaKey.getPrivateKey().getEncoded())
+                    .build();
 
-        if (strRoles == null) {
-            Role accountRole = roleRepository.findByName(ROLE_USER).orElseThrow(() ->
-                    new RuntimeException("Error: Role is not found"));
-            roles.add(accountRole);
-        } else {
-            strRoles.forEach(role -> {
-                switch (role) {
-                    case "admin":
-                        Role adminRole = roleRepository.findByName(ROLE_ADMIN).orElseThrow(() -> new
-                                RuntimeException("Error: Role is not found"));
-                        roles.add(adminRole);
-                        break;
-                    default:
-                        Role userRole = roleRepository.findByName(ROLE_USER).orElseThrow(() -> new
-                                RuntimeException("Error: Role is not found"));
-                        roles.add(userRole);
-                        break;
-                }
-            });
+            Set<String> strRoles = signupRequest.getRole();
+            Set<Role> roles = new HashSet<>();
+
+            if (strRoles == null) {
+                Role accountRole = roleRepository.findByName(ROLE_USER).orElseThrow(() ->
+                        new RuntimeException("Error: Role is not found"));
+                roles.add(accountRole);
+            } else {
+                strRoles.forEach(role -> {
+                    switch (role) {
+                        case "admin":
+                            Role adminRole = roleRepository.findByName(ROLE_ADMIN).orElseThrow(() -> new
+                                    RuntimeException("Error: Role is not found"));
+                            roles.add(adminRole);
+                            break;
+                        default:
+                            Role userRole = roleRepository.findByName(ROLE_USER).orElseThrow(() -> new
+                                    RuntimeException("Error: Role is not found"));
+                            roles.add(userRole);
+                            break;
+                    }
+                });
+            }
+            user.setRoles(roles);
+            user.setEnabled(false);
+            accountService.save(user);
         }
-        user.setRoles(roles);
-        accountService.save(user);
 
-        return ResponseEntity.ok(new MessageResponse("User register successfully"));
+        Optional<Account> saved = Optional.of(accountService.save(user));
+
+        saved.ifPresent(u -> {
+            try {
+                verificationTokenService.save(saved.get().getId());
+
+                //send verification email
+                emailService.sendVerificationEmail(u);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+
+        return ResponseEntity.ok(new MessageResponse("Success! A verification email has been sent to your email address"));
+
     }
 
     public static boolean isValidEmailAddress(String email) {

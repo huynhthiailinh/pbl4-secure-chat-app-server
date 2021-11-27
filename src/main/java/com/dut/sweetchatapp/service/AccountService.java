@@ -1,6 +1,7 @@
 package com.dut.sweetchatapp.service;
 
 import com.dut.sweetchatapp.model.Account;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -23,5 +24,7 @@ public interface AccountService {
     byte[] getPublicKeyByAccountId(int accountId);
 
     byte[] getPrivateKeyByAccountId(int accountId);
+
+    void updateProfile(Account account, MultipartFile multipartFile);
 
 }

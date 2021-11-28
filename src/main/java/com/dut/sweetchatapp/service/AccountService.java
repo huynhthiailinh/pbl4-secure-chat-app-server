@@ -24,4 +24,6 @@ public interface AccountService {
 
     byte[] getPrivateKeyByAccountId(int accountId);
 
+    void updateAvatarById(int id, String avatar);
+
 }

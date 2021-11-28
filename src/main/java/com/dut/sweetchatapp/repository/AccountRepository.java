@@ -31,4 +31,8 @@ public interface AccountRepository extends CrudRepository<Account, Integer> {
     @Query("SELECT a.privateKey FROM Account a WHERE a.id = :accountId")
     byte[] getPrivateKeyByAccountId(@Param("accountId") int accountId);
 
+    @Modifying
+    @Query("UPDATE Account a SET a.avatar = :avatar WHERE a.id = :id")
+    void updateAvatarById(@Param("id") int id, @Param("avatar") String avatar);
+
 }

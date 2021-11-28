@@ -61,4 +61,9 @@ public class AccountServiceImpl implements AccountService {
         return accountRepository.getPrivateKeyByAccountId(accountId);
     }
 
+    @Override
+    public void updateAvatarById(int id, String avatar) {
+        accountRepository.updateAvatarById(id, avatar);
+    }
+
 }

@@ -45,4 +45,9 @@ public class ChatRoomServiceImpl implements ChatRoomService {
                     return Optional.of(roomId);
                 });
     }
+
+    @Override
+    public Boolean existsBySenderIdAndReceiverId(int senderId, int receiverId) {
+        return chatRoomRepository.existsBySenderIdAndReceiverId(senderId, receiverId);
+    }
 }

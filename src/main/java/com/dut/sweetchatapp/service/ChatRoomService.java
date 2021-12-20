@@ -6,4 +6,6 @@ public interface ChatRoomService {
 
     Optional<String> getRoomId (int senderId, int receiverId, boolean createIfNotExist);
 
+    Boolean existsBySenderIdAndReceiverId(int senderId, int receiverId);
+
 }

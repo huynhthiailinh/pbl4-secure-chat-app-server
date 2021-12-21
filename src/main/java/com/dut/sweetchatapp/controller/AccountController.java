@@ -1,6 +1,7 @@
 package com.dut.sweetchatapp.controller;
 
 import com.dut.sweetchatapp.service.AccountService;
+import com.dut.sweetchatapp.service.ChatRoomService;
 import com.dut.sweetchatapp.service.ImageService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,12 +20,15 @@ public class AccountController {
 
     private final ImageService imageService;
 
+    private final ChatRoomService chatRoomService;
+
     @GetMapping("summaries/{accountId}")
     public ResponseEntity<?> findAllUserSummaries(@PathVariable int accountId) {
         return ResponseEntity.ok(accountService
                 .getAllAccounts()
                 .stream()
-                .filter(account -> account.getId() != accountId));
+                .filter(account -> account.getId() != accountId)
+                .filter(account -> chatRoomService.existsBySenderIdAndReceiverId(accountId, account.getId())));
     }
 
     @PostMapping("upload-avatar")
@@ -35,4 +39,11 @@ public class AccountController {
         return imageUrl;
     }
 
+    @GetMapping
+    public ResponseEntity getAllAccount(@RequestParam int currentId) {
+        return ResponseEntity.ok(accountService.getAllAccounts()
+                .stream()
+                .filter(account -> account.getId() != currentId)
+                .filter(account -> !chatRoomService.existsBySenderIdAndReceiverId(currentId, account.getId())));
+    }
 }

@@ -11,4 +11,6 @@ public interface ChatRoomRepository extends CrudRepository<ChatRoom, Integer> {
 
     Optional<ChatRoom> findBySenderIdAndReceiverId(int senderId, int receiverId);
 
+    Boolean existsBySenderIdAndReceiverId(int senderId, int receiverId);
+
 }

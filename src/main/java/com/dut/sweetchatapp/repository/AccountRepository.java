@@ -35,4 +35,8 @@ public interface AccountRepository extends CrudRepository<Account, Integer> {
     @Query("UPDATE Account a SET a.avatar = :avatar WHERE a.id = :id")
     void updateAvatarById(@Param("id") int id, @Param("avatar") String avatar);
 
+    @Modifying
+    @Query("UPDATE Account a SET a.password = :password WHERE a.id = :accountId")
+    void updatePasswordByAccountId(@Param("accountId") int accountId, @Param("password") String password);
+
 }

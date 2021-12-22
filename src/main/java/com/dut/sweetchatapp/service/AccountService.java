@@ -26,4 +26,6 @@ public interface AccountService {
 
     void updateAvatarById(int id, String avatar);
 
+    void updatePasswordByAccountId(int accountId, String password);
+
 }

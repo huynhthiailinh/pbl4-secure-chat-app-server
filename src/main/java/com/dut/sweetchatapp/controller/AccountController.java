@@ -1,5 +1,6 @@
 package com.dut.sweetchatapp.controller;
 
+import com.dut.sweetchatapp.dto.ChangeFullNameDTO;
 import com.dut.sweetchatapp.dto.ChangePasswordDTO;
 import com.dut.sweetchatapp.dto.MessageResponse;
 import com.dut.sweetchatapp.handleException.exception.InvalidParamException;
@@ -49,6 +50,12 @@ public class AccountController {
                 .stream()
                 .filter(account -> account.getId() != currentId)
                 .filter(account -> !chatRoomService.existsBySenderIdAndReceiverId(currentId, account.getId())));
+    }
+
+    @PutMapping("/change-full-name")
+    public ResponseEntity updateFullNameById(@RequestBody ChangeFullNameDTO changeFullNameDTO) {
+        accountService.updateFullNameById(changeFullNameDTO.getAccountId(), changeFullNameDTO.getFullName());
+        return new ResponseEntity<>(new MessageResponse("Change full name succeed!"), HttpStatus.OK);
     }
 
     @PutMapping("/change-password")

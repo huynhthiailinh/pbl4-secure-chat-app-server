@@ -70,6 +70,11 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    public void updateFullNameById(int accountId, String fullName) {
+        accountRepository.updateFullNameByAccountId(accountId, fullName);
+    }
+
+    @Override
     public void updatePasswordByAccountId(int accountId, String password) {
         accountRepository.updatePasswordByAccountId(accountId, passwordEncoder.encode(password));
     }

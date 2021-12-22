@@ -1,9 +1,13 @@
 package com.dut.sweetchatapp.controller;
 
+import com.dut.sweetchatapp.dto.ChangePasswordDTO;
+import com.dut.sweetchatapp.dto.MessageResponse;
+import com.dut.sweetchatapp.handleException.exception.InvalidParamException;
 import com.dut.sweetchatapp.service.AccountService;
 import com.dut.sweetchatapp.service.ChatRoomService;
 import com.dut.sweetchatapp.service.ImageService;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -45,5 +49,19 @@ public class AccountController {
                 .stream()
                 .filter(account -> account.getId() != currentId)
                 .filter(account -> !chatRoomService.existsBySenderIdAndReceiverId(currentId, account.getId())));
+    }
+
+    @PutMapping("/change-password")
+    public ResponseEntity updatePasswordById(@RequestBody ChangePasswordDTO changePasswordDTO) {
+
+        if (changePasswordDTO.getPassword().length() < 6) {
+            throw new InvalidParamException("Error: Password length less than 6 characters");
+        }
+
+        accountService.updatePasswordByAccountId(
+                changePasswordDTO.getAccountId(),
+                changePasswordDTO.getPassword());
+
+        return new ResponseEntity<>(new MessageResponse("Change password succeed!"), HttpStatus.OK);
     }
 }

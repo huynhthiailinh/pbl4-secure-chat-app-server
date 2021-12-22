@@ -5,6 +5,7 @@ import com.dut.sweetchatapp.model.Account;
 import com.dut.sweetchatapp.repository.AccountRepository;
 import com.dut.sweetchatapp.service.AccountService;
 import lombok.AllArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,6 +15,8 @@ import java.util.List;
 public class AccountServiceImpl implements AccountService {
 
     private final AccountRepository accountRepository;
+
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public Boolean checkIfEnabled(String name) {
@@ -64,6 +67,11 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public void updateAvatarById(int id, String avatar) {
         accountRepository.updateAvatarById(id, avatar);
+    }
+
+    @Override
+    public void updatePasswordByAccountId(int accountId, String password) {
+        accountRepository.updatePasswordByAccountId(accountId, passwordEncoder.encode(password));
     }
 
 }

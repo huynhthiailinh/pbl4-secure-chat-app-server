@@ -15,13 +15,20 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import javax.imageio.ImageIO;
+import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 
 @AllArgsConstructor
@@ -55,6 +62,26 @@ public class ChatController {
                         saved.getId(),
                         saved.getSenderId(),
                         saved.getSenderName()));
+    }
+
+    @MessageMapping("/file")
+    public void processMessageFile(@Payload String file) throws NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, InvalidKeySpecException, BadPaddingException, InvalidKeyException, IOException {
+        System.out.println(file);
+//        ByteArrayInputStream bis = new ByteArrayInputStream(file);
+//        BufferedImage bImage2 = ImageIO.read(bis);
+//        ImageIO.write(bImage2, "jpg", new File("output.jpg") );
+//        System.out.println("image created");
+//        var roomId = chatRoomService
+//                .getRoomId(chatMessage.getSenderId(), chatMessage.getReceiverId(), true);
+//        chatMessage.setRoomId(roomId.get());
+//
+//        ChatMessage saved = chatMessageService.save(chatMessage);
+//        messagingTemplate.convertAndSendToUser(
+//                Integer.toString(chatMessage.getReceiverId()),"/queue/messages",
+//                new ChatNotification(
+//                        saved.getId(),
+//                        saved.getSenderId(),
+//                        saved.getSenderName()));
     }
 
     @GetMapping("/messages/{senderId}/{receiverId}/count")

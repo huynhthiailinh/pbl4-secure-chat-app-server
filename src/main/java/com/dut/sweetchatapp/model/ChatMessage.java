@@ -1,6 +1,7 @@
 package com.dut.sweetchatapp.model;
 
 import com.dut.sweetchatapp.enums.MessageStatus;
+import com.dut.sweetchatapp.enums.MessageType;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -36,6 +37,10 @@ public class ChatMessage {
 
     @Column(columnDefinition = "LONGTEXT")
     private String content;
+
+    private byte[] file;
+
+    private MessageType messageType;
 
     @CreatedDate
     @Column(updatable = false)

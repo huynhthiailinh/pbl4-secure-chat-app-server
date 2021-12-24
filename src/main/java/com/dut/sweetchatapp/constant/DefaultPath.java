@@ -12,6 +12,12 @@ public class DefaultPath {
 
     public static final String ACTIVATION_PATH = "api/public/active-email";
 
+    public static final String FORGOT_PASSWORD_PATH = "api/public/forgot-password";
+
+    public static final String RESET_PASSWORD_PATH = "api/public/reset-password";
+
+    public static final String SAVE_PASSWORD_PATH = "api/public/save-password";
+
     public static final String PUBLIC_IMAGE_PATH = "api/public/images";
 
     public static String createRootFolder(String storagePath) {

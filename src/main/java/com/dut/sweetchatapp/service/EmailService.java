@@ -8,4 +8,6 @@ public interface EmailService {
 
     void sendVerificationEmail(Account account) throws MessagingException;
 
+    void sendResetPasswordEmail(String email) throws MessagingException;
+
 }

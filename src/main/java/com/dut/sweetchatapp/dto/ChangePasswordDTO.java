@@ -13,6 +13,8 @@ public class ChangePasswordDTO {
 
     private int accountId;
 
+    private String token;
+
     private String password;
 
 }
